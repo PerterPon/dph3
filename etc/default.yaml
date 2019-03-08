@@ -1,0 +1,55 @@
+log:
+    pm2: false
+    appenders:
+        stdout:
+            type: "stdout"
+    categories:
+        default:
+            appenders: [ "stdout" ]
+            level: 'ALL'
+        master:
+            appenders: [ "stdout" ]
+            level: "ALL"
+        main:
+            appenders: [ "stdout" ]
+            level: "ALL"
+        polling:
+            appenders: [ "stdout" ]
+            level: "ALL"
+
+ipc:
+    master:
+        sock: dph.sock
+    main:
+        file: main
+    polling:
+        file: polling
+
+supportedStandard:
+    - "USD"
+    # - "BTC"
+
+supportedCoin:
+    - "BTC"
+    # - "ETH"
+
+supportedExchange:
+    - "bitfinex"
+    - "binance"
+    # - "zb"
+    # - "bittrex"
+    # - "bitstamp"
+    # - "huobipro"
+
+exchanges:
+
+strategy:
+    TH:
+        buffer: 1
+
+database:
+    host: ''
+    username: ''
+    password: ''
+    port: ''
+    database: ''
