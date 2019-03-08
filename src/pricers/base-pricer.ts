@@ -1,7 +1,7 @@
 
 /*
  * base-pricer.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Sat Dec 22 2018 15:57:19 GMT+0800 (CST)
  */
 

@@ -1,7 +1,7 @@
 
 /*
  * action.d.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Sat Dec 22 2018 16:10:02 GMT+0800 (CST)
  */
 

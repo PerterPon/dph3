@@ -1,7 +1,7 @@
 
 /*
  * dh-stratege.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Mon Feb 18 2019 20:55:23 GMT+0800 (CST)
  */
 
@@ -83,6 +83,7 @@ export class DHStratege extends BaseStratege {
     private calculate(dpCoinMap: Map<string, Map<DPHExchange, TOrderBook>>): TTHAction[] {
         const arrayMap = Array.from(dpCoinMap);
         const config: TDPHConfig = getConfig();
+        const bookIndex: number = config.strategy.TH.bookIndex || 0;
         const thActions: TTHAction[] = [];
         for (let i = 0; i < arrayMap.length; i++) {
             const item = arrayMap[i];
@@ -96,8 +97,8 @@ export class DHStratege extends BaseStratege {
                 const fees: TFees = config.exchanges[exchange].fees;
                 const calItem: TTHCalItem = {
                     fees: fees,
-                    ask: orderBook.asks[1],
-                    bid: orderBook.bids[1],
+                    ask: orderBook.asks[bookIndex],
+                    bid: orderBook.bids[bookIndex],
                     exchange: exchange,
                     coin: dphCoin as DPHCoin,
                     standardCoin: standardCoin as StandardCoin

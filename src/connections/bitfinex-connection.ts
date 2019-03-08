@@ -1,7 +1,7 @@
 
 /*
  * bitfinex-connection.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Thu Feb 14 2019 11:56:57 GMT+0800 (CST)
  */
 

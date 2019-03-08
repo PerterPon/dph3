@@ -1,7 +1,7 @@
 
 /*
  * binance-connection.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Sun Feb 17 2019 18:50:13 GMT+0800 (CST)
  */
 

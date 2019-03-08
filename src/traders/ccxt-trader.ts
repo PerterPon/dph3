@@ -1,7 +1,7 @@
 
 /*
  * ccxt-trader.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Sun Feb 24 2019 22:44:37 GMT+0800 (CST)
  */
 
@@ -10,9 +10,14 @@ import * as ccxt from 'ccxt';
 import { BaseTrader } from 'src/traders/base-trader';
 import { TDPHConfig, TExchangeConfig } from 'main-types';
 import { getConfig } from 'src/core/config';
-import { DPHExchange, ETradeType, StandardCoin, DPHCoin } from 'src/enums/main';
+import { trackOrder } from 'src/core/order-tracker';
+import { DPHExchange, ETradeType, StandardCoin, DPHCoin, ECCXTOrderStatus } from 'src/enums/main';
 import { TTHAction } from 'action-types';
 import { fetchSymbol } from 'src/util';
+import { TCCXTOrderStatus } from 'trade-types';
+import { Logger } from 'log4js';
+import { getLogger } from 'src/core/log';
+import chalk from 'chalk';
 
 interface CCXTExchange {
     new(opts: any): ccxt.Exchange;
@@ -80,14 +85,15 @@ export class CCXTTrader extends BaseTrader {
             throw error;
         }
         const symbol: string = this.fetchCCXTSymbol(action.exchange, action.standardCoin, action.coin);
+        const logger: Logger = getLogger();
         try {
-            console.log(symbol, action.orderType, action.action, action.amount, action.price);
-            // const result = await ccxtExchange.createOrder(symbol, action.orderType, action.action, action.amount, action.price);
-
-            // const result = await ccxtExchange.createOrder(symbol, action.orderType, action.action, action.amount, action.price);
-            // console.log(result);
+            const amount: number = 0.004;
+            console.log(`creat order: ${exchange}, ${symbol}, ${action.price}, ${action.amount}`);
+            const result: TCCXTOrderStatus = await ccxtExchange.createOrder(symbol, action.orderType, action.action, 0.004, action.price);
+            trackOrder(exchange, ccxtExchange, result.id, symbol);
         } catch(e) {
-            // throw e;
+            console.log(chalk.bgRed(`create order error: [${e.message}]`));
+            console.log(action);
         }
     }
 

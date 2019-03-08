@@ -1,7 +1,7 @@
 
 /*
  * binance-order-book.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Mon Feb 18 2019 14:46:39 GMT+0800 (CST)
  */
 import * as _ from 'lodash';

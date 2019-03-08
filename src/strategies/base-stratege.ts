@@ -1,7 +1,7 @@
 
 /*
  * base-stratege.ts
- * Author: 王 羽涵<perterpon@gmail.com>
+ * Author: Pon<perterpon@gmail.com>
  * Create: Sat Dec 22 2018 16:06:18 GMT+0800 (CST)
  */
 
