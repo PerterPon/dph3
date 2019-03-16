@@ -7,7 +7,9 @@
 
 import * as commander from 'commander';
 import chalk from 'chalk';
-import { start } from 'src/main';
+import { startDPH } from 'src/main';
+import { startApp } from 'src/app';
+import { initEnv } from 'src/core/env';
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
@@ -16,6 +18,12 @@ commander
     .parse(process.argv);
 
 start();
+
+async function start(): Promise<void> {
+    await initEnv();
+    startDPH();
+    startApp();
+}
 
 process.on('uncaughtException', (error) => {
     console.log(chalk.red('---------uncaughtException--------'));

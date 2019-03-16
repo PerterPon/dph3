@@ -37,6 +37,11 @@ export enum EStrategyType {
     TH = 'TH'
 }
 
+export enum EOBType {
+    ASK = 'ask',
+    BID = 'bid'
+}
+
 export enum ECCXTOrderStatus {
     UNKNOW = 'UNKNOW',
     CANCELED = 'canceled',

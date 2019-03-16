@@ -6,10 +6,13 @@
  */
 import * as _ from 'lodash';
 
-import { TOrderBook, TBinanceDepthUpdate } from "pricer-types";
+import { getLogger } from 'src/core/log';
 
 import { BinanceConnection } from 'src/connections/binance-connection';
-import { Logger, getLogger } from 'log4js';
+import { EOBType } from 'src/enums/main';
+
+import { TOrderBook, TBinanceDepthUpdate } from "pricer-types";
+import { Logger } from 'log4js';
 
 export class BinanceOrderBook {
 
@@ -39,16 +42,37 @@ export class BinanceOrderBook {
             logger.warn(`get binance update but U: [${updateData.U}] did not match last u: [${this.lastu}], symbol: [${this.symbol}]`);
         } else {
             this.lastu = updateData.U;
-            this.orderBook.asks = this.doUpdatePrice(updateData.a, this.orderBook.asks);
-            this.orderBook.bids = this.doUpdatePrice(updateData.b, this.orderBook.bids);
+            this.orderBook.asks = this.doUpdatePrice(updateData.a, this.orderBook.asks, EOBType.ASK);
+            this.orderBook.bids = this.doUpdatePrice(updateData.b, this.orderBook.bids, EOBType.BID);
         }
         return this.orderBook;
     }
 
-    private doUpdatePrice(newPrice: [number, number][], oldPrice: [number, number][]): [number, number][] {
+    private doUpdatePrice(newPrice: [number, number][], oldPrice: [number, number][], type: EOBType): [number, number][] {
+        const goodPrice = (targetPrice: number, originalPrice: number) => {
+            if (
+                (EOBType.ASK === type && targetPrice < originalPrice) ||
+                (EOBType.BID === type && targetPrice > originalPrice)
+            ) {
+                return true;
+            }
+            return false;
+        }
+        let firstPrice: number|undefined = _.get(oldPrice, '[0][0]');
+        if (undefined === firstPrice) {
+            if (EOBType.ASK === type) {
+                firstPrice = Number.MAX_VALUE;
+            } else if (EOBType.BID === type) {
+                firstPrice = 0;
+            }
+        }
+
         for (let i = 0; i < newPrice.length; i ++) {
-            const [ price, amount ] = newPrice[i];
-            if (0 === Number(amount)) {
+            let [ price, amount ] = newPrice[i];
+            price = Number(price);
+            amount = Number(amount);
+            //1. amount is 0, remove price
+            if (0 === amount) {
                 _.remove(oldPrice, function(value: [number, number], index: number, collection: any):boolean {
                     if (value[0] === price) {
                         return true;
@@ -56,13 +80,38 @@ export class BinanceOrderBook {
                     return false;
                 });
             } else {
-                _.map(oldPrice, (value: [number, number], index: number, collection: any) => {
-                    if (value[0] === price) {
-                        value[1] = amount;
+                //2. new best price, insert price to the first
+                const needInsert = goodPrice(price, firstPrice);
+                if (true === needInsert) {
+                    oldPrice.unshift([price, amount]);
+                } else {
+                    // 3. check if the price already in order book
+                    let updated: boolean = false;
+                    for (let i = 0; i < oldPrice.length; i++) {
+                        const [oldPriceNum] = oldPrice[i];
+                        if (price === oldPriceNum) {
+                            oldPrice[i][1] = amount;
+                            updated = true;
+                        }
                     }
-                    return value;
-                });
+
+                    // 4. if price did not exists, find a right place and insert it
+                    if (false === updated) {
+                        for (let i = 0; i < oldPrice.length; i++) {
+                            const [oldPriceNum] = oldPrice[i];
+                            const needInsert: boolean = goodPrice(price, oldPriceNum);
+                            if (true === needInsert) {
+                                oldPrice.splice(i, 0, [price, amount]);
+                                break;
+                            }
+                        }
+                    }
+                }
+
             }
+        }
+        if (oldPrice.length >= 10) {
+            oldPrice = oldPrice.slice(0, 10);
         }
         return oldPrice;
     }

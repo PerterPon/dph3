@@ -26,9 +26,9 @@ import { TDPHConfig, DPHName } from 'main-types';
 import { TOrderBook } from 'pricer-types';
 import { TTHAction } from 'action-types';
 import { IExcutor } from './excutors/base-excutor';
+import { sleep } from './util';
 
-export async function start(): Promise<void> {
-    await initEnv();
+export async function startDPH(): Promise<void> {
     await initPricers();
     await initExcutors();
     await initTraders();
@@ -142,6 +142,9 @@ async function listenStratege(stratege: IStratege): Promise<void> {
             const actions: TTHAction[] = actionMap.get(stratege);
             excutor.excute(actions);
         }
+
+        // just sleep 10's, before anothor actions
+        await sleep(10 * 1000);
     }
 }
 

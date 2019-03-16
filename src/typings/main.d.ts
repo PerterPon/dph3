@@ -16,6 +16,9 @@ declare module "main-types" {
     export type DPHName = string;
 
     export type TDPHConfig = {
+        app: {
+            port: number;
+        },
         log: TLogConfiguration,
         ipc: {
             [name: string]: TProcessConfig;

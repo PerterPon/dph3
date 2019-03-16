@@ -27,6 +27,9 @@ export class DHStratege extends BaseStratege {
     private coinValueMap: Map<string, string> = new Map();
 
     public async priceUpdate(exchange: DPHExchange, coin: DPHCoin, standardCoin: StandardCoin, orderBook: TOrderBook): Promise<void> {
+        if (undefined == orderBook.asks || undefined === orderBook.bids) {
+            debugger;
+        }
         const firstAsk: [number,number] = orderBook.asks[0];
         const firstBid: [number, number] = orderBook.bids[0];
         const checkKey: string = `${exchange}_${standardCoin}_${coin}`;
@@ -154,6 +157,9 @@ export class DHStratege extends BaseStratege {
             return [];
         }
         // 2. get the target amount
+        if (undefined === askItem || undefined === bidItem) {
+            debugger;
+        }
         const askAmount: number = Math.abs(askItem.ask[1]);
         const bidAmount: number = Math.abs(bidItem.bid[1]);
 

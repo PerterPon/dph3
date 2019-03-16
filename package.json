@@ -11,19 +11,23 @@
 		"mocha": "5.2.0"
 	},
 	"dependencies": {
+		"@types/koa": "^2.0.48",
+		"@types/koa-router": "^7.0.40",
+		"bitfinex-api-node": "~2.0.4",
 		"ccxt": "~1.18.x",
 		"chalk": "~2.4.1",
 		"commander": "~2.15.1",
 		"fresh-mysql": "^1.0.4",
 		"fs-extra": "~6.0.1",
 		"js-yaml": "~3.12.0",
+		"koa": "^2.7.0",
+		"koa-router": "^7.4.0",
 		"lodash": "^4.17.10",
 		"log4js": "2.9.0",
+		"node-binance-api": "~0.9.0",
 		"pm2": "2.10.4",
 		"typescript": "^3.2.4",
-		"yargs": "~11.0.0",
-		"bitfinex-api-node": "~2.0.4",
-		"node-binance-api": "~0.9.0"
+		"yargs": "~11.0.0"
 	},
 	"scripts": {
 		"test": "make test",

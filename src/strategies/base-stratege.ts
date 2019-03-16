@@ -7,6 +7,8 @@
 
 import * as _ from 'lodash';
 
+import { setDebugger } from 'src/core/debug';
+
 import { TTHAction } from 'action-types';
 import { DPHCoin, StandardCoin, DPHExchange } from 'src/enums/main';
 import { TOrderBook } from 'pricer-types';
@@ -39,6 +41,9 @@ export class BaseStratege implements IStratege {
             standardCoinMap.set(standardCoin, coinMap);
         }
         coinMap.set(coin, orderBook);
+        const askCount = orderBook.asks[0][0] * orderBook.asks[0][1];
+        const bidCount = orderBook.bids[0][0] * orderBook.bids[0][1];
+        setDebugger(exchange, `${askCount}_____${bidCount}`);
         await this.pushPrice();
     }
 

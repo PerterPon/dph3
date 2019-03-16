@@ -89,8 +89,8 @@ export class CCXTTrader extends BaseTrader {
         try {
             const amount: number = 0.004;
             console.log(`creat order: ${exchange}, ${symbol}, ${action.price}, ${action.amount}`);
-            const result: TCCXTOrderStatus = await ccxtExchange.createOrder(symbol, action.orderType, action.action, 0.004, action.price);
-            trackOrder(exchange, ccxtExchange, result.id, symbol);
+            // const result: TCCXTOrderStatus = await ccxtExchange.createOrder(symbol, action.orderType, action.action, 0.004, action.price);
+            // trackOrder(exchange, ccxtExchange, result.id, symbol);
         } catch(e) {
             console.log(chalk.bgRed(`create order error: [${e.message}]`));
             console.log(action);

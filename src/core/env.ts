@@ -13,7 +13,6 @@ import { initLogger } from 'src/core/log';
 import { TDPHConfig } from 'main-types';
 
 export async function initEnv(): Promise<void> {
-    debugger;
     await initConfig(commander.env);
     const config: TDPHConfig = getConfig();
     initLogger(config.log);
