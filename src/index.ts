@@ -25,6 +25,10 @@ async function start(): Promise<void> {
     startApp();
 }
 
+async function stop(): Promise<void> {
+    
+}
+
 process.on('uncaughtException', (error) => {
     console.log(chalk.red('---------uncaughtException--------'));
     console.log(error);

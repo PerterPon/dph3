@@ -48,7 +48,7 @@ exchanges:
 
 strategy:
     TH:
-        buffer: 1
+        buffer: 6
         bookIndex: 0
 
 database:

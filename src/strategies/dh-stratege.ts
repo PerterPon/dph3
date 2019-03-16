@@ -12,6 +12,7 @@ import { getConfig } from 'src/core/config';
 
 import { DPHExchange, StandardCoin, DPHCoin, ETradeType, EOrderType, EStrategyType } from 'src/enums/main';
 import { getLogger } from 'src/core/log';
+import { getDebugger } from 'src/core/debug';
 
 import { TDPHConfig } from 'main-types';
 import { TTHStrategeConfig, TTHCalItem } from 'stratege-types';
@@ -27,20 +28,24 @@ export class DHStratege extends BaseStratege {
     private coinValueMap: Map<string, string> = new Map();
 
     public async priceUpdate(exchange: DPHExchange, coin: DPHCoin, standardCoin: StandardCoin, orderBook: TOrderBook): Promise<void> {
-        if (undefined == orderBook.asks || undefined === orderBook.bids) {
-            debugger;
-        }
         const firstAsk: [number,number] = orderBook.asks[0];
         const firstBid: [number, number] = orderBook.bids[0];
         const checkKey: string = `${exchange}_${standardCoin}_${coin}`;
         // sense of price
         // one price one action
-        const valueKey: string = `${firstAsk[0]}_${firstBid[0]}`;
+        const firstAskPrice: number = _.get(firstAsk, '[0]');
+        const firstBidPrice: number = _.get(firstBid, '[0]');
+        const valueKey: string = `${firstAskPrice}_${firstBidPrice}`;
         const oldValue: string|undefined = this.coinValueMap.get(checkKey);
         if (oldValue === valueKey) {
             return;
         }
         this.coinValueMap.set(checkKey, valueKey);
+
+        // some times, binance order book will left nothing, so here need do something.
+        if (true === _.isEmpty(firstAsk) || true === _.isEmpty(firstBid)) {
+            return;
+        }
 
         super.priceUpdate(exchange, coin, standardCoin, orderBook);
     }
@@ -157,14 +162,16 @@ export class DHStratege extends BaseStratege {
             return [];
         }
         // 2. get the target amount
-        if (undefined === askItem || undefined === bidItem) {
-            debugger;
-        }
         const askAmount: number = Math.abs(askItem.ask[1]);
         const bidAmount: number = Math.abs(bidItem.bid[1]);
 
         // choose the min amount
-        const targetAmount: number = Math.min(askAmount, bidAmount);
+        let targetAmount: number = Math.min(askAmount, bidAmount);
+        if (targetAmount < 0.006) {
+            logger.warn(`too low amount: [${targetAmount}], give up`);
+            return [];
+        }
+        targetAmount = 0.005 + Math.random() * 0.001;
 
         // 3. calculate the total fee
         const askFee: number = askItem.fees.taker;
@@ -173,7 +180,7 @@ export class DHStratege extends BaseStratege {
         const totalFee: number = bestAsk * targetAmount * askFee + bestBid * targetAmount * bidFee;
         const aimsProfit: number = totalFee * (1 + thBuffer);
 
-        if (bestBid - bestAsk >= aimsProfit) {
+        if ((bestBid - bestAsk) * targetAmount >= aimsProfit) {
             const totalProfit: number = (bestBid - bestAsk) * targetAmount - totalFee;
             const buyAction: TTHAction = {
                 action: ETradeType.BUY,
@@ -205,6 +212,13 @@ export class DHStratege extends BaseStratege {
             }
 
             actions.push(buyAction, sellAction);
+            const debug = getDebugger();
+            const totalFeeDebug = debug.totalFee || 0;
+            const totalProfitDebug = debug.totalProfit || 0;
+            const totalAmountDebug = debug.totalAmount || 0;
+            debug.totalFee = totalFeeDebug + totalFee;
+            debug.totalProfit = totalProfitDebug + totalProfit;
+            debug.totalAmount = totalAmountDebug + targetAmount;
             logger.info(
                 chalk.blue(`[DH-STRATEGE] new action [${askItem.coin}]: 
                 fee: [${totalFee}], profit: [${totalProfit}], amount: [${targetAmount}]

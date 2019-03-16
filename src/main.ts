@@ -19,6 +19,7 @@ import { IStratege } from 'src/strategies/base-stratege';
 import { CCXTTrader } from 'src/traders/ccxt-trader';
 
 import { getPricer, getStratege, getExcutor } from 'src/util/factory';
+import { sleep } from 'src/util';
 
 import { DPHExchange, DPHCoin, StandardCoin, EStrategyType } from 'src/enums/main';
 
@@ -26,7 +27,12 @@ import { TDPHConfig, DPHName } from 'main-types';
 import { TOrderBook } from 'pricer-types';
 import { TTHAction } from 'action-types';
 import { IExcutor } from './excutors/base-excutor';
-import { sleep } from './util';
+
+export async function stopDPH(): Promise<void> {
+    priceMap.clear();
+    strategeMap.clear();
+    excutorMap.clear();
+}
 
 export async function startDPH(): Promise<void> {
     await initPricers();

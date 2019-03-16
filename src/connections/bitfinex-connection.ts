@@ -13,7 +13,8 @@ const bfx = new BFX({
     ws: {
         autoReconnect: true,
         seqAudit: true,
-        packetWDDelay: 10 * 1000
+        // packetWDDelay: 10 * 1000,
+        manageOrderBooks: true
     }
 });
 
