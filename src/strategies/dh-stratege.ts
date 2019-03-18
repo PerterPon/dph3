@@ -26,6 +26,23 @@ export class DHStratege extends BaseStratege {
 
     private latestExchangeValueMap: Map<string, TTHAction> = new Map();
     private coinValueMap: Map<string, string> = new Map();
+    private bestCoinMap: Map<string, string> = new Map();
+
+    private lastActionTime: Date;
+    private thBuffer: number = 0;
+    private bufferTimer: NodeJS.Timer;
+
+    private lastAsk: number;
+    private lastBid: number;
+
+    public async init(): Promise<void> {
+        super.init();
+        const config: TDPHConfig = getConfig();
+        this.thBuffer = config.strategy.TH.buffer;
+        const debuggInfo = getDebugger();
+        debuggInfo.thBuffer = this.thBuffer;
+        this.calculateBestBuffer();
+    }
 
     public async priceUpdate(exchange: DPHExchange, coin: DPHCoin, standardCoin: StandardCoin, orderBook: TOrderBook): Promise<void> {
         const firstAsk: [number,number] = orderBook.asks[0];
@@ -124,10 +141,7 @@ export class DHStratege extends BaseStratege {
         if (1 >= calItems.length) {
             return [];
         }
-
-        const config: TDPHConfig = getConfig();
-        const strategeConfig: TTHStrategeConfig = config.strategy.TH as TTHStrategeConfig;
-        const thBuffer: number = strategeConfig.buffer;
+        const thBuffer: number = this.thBuffer;
 
         const actions: TTHAction[] = [];
         const asks: number[] = [];
@@ -140,12 +154,21 @@ export class DHStratege extends BaseStratege {
             asks.push(ask[0]);
             bids.push(bid[0]);
         }
-
         // 1. get the best ask and bid
         // choose the min ask price
         const bestAsk: number = Math.min(...asks);
         // choose the max bid price
         const bestBid: number = Math.max(...bids);
+
+        // check if the price is already calculated
+        const bestPriceKey = `${calItems[0].standardCoin}_${calItems[0].coin}`;
+        const latestBestPrice = this.bestCoinMap.get(bestPriceKey);
+        const nowBestPrice = `${bestAsk}_${bestBid}`;
+        if (latestBestPrice === nowBestPrice) {
+            return [];
+        }
+        this.bestCoinMap.set(bestPriceKey, nowBestPrice);
+
         // if best ask > best bid, meaningless
         if (bestAsk >= bestBid) {
             logger.info(`[DH-STRATEGE] calculate item, but ask > ask, \nask: [${bestAsk}] bid: [${bestBid}]`);
@@ -219,16 +242,23 @@ export class DHStratege extends BaseStratege {
             debug.totalFee = totalFeeDebug + totalFee;
             debug.totalProfit = totalProfitDebug + totalProfit;
             debug.totalAmount = totalAmountDebug + targetAmount;
+            this.calculateBestBuffer();
+            const debugInfo = getDebugger();
+            const tradeTimes: number = debugInfo.tradeTimes || 0;
+            debugInfo.tradeTimes = tradeTimes + 1;
+            const avgBuffer: number = debugInfo.avgBuffer || 0;
+            debugInfo.avgBuffer = (avgBuffer * tradeTimes + this.thBuffer) / tradeTimes + 1;
             logger.info(
                 chalk.blue(`[DH-STRATEGE] new action [${askItem.coin}]: 
                 fee: [${totalFee}], profit: [${totalProfit}], amount: [${targetAmount}]
                 Sell: ${bidItem.exchange} | ${bestBid} | ${targetAmount}
                 Buy: ${askItem.exchange} | ${bestAsk} | ${targetAmount}
+                DH Buffer: [${this.thBuffer}]
                 `)
             );
         } else {
-            const actuallyProfit: number = (bestBid - bestAsk) * targetAmount - totalFee;
-            logger.info(`[DH-STRATEGE] not enough profit, give up!\nask: [${askItem.exchange}:${bestAsk}], bid: [${bidItem.exchange}:${bestBid}], amount: [${targetAmount}] total fee: [${totalFee}], aim profit: [${aimsProfit}], actually profit: [${actuallyProfit}]`);
+            // const actuallyProfit: number = (bestBid - bestAsk) * targetAmount - totalFee;
+            // logger.info(`[DH-STRATEGE] not enough profit, give up!\nask: [${askItem.exchange}:${bestAsk}], bid: [${bidItem.exchange}:${bestBid}], amount: [${targetAmount}] total fee: [${totalFee}], aim profit: [${aimsProfit}], actually profit: [${actuallyProfit}]`);
         }
 
         return actions;
@@ -246,6 +276,58 @@ export class DHStratege extends BaseStratege {
             this.latestExchangeValueMap.set(checkKey, action);
         }
         return result;
+    }
+
+    private calculateBestBuffer(reserve: boolean = false, outTime: number = 0): void {
+        // first time, just ignore it
+        const now: Date = new Date();
+        if (undefined === this.lastActionTime) {
+            this.lastActionTime = now;
+            return;
+        }
+
+        const env: TDPHConfig = getConfig();
+        const bestDistanceTime: number = env.strategy.TH.distanceTime;
+        // 1. get the distance time
+        const distanceTime: number = now.getTime() - this.lastActionTime.getTime();
+        if (bestDistanceTime * 0.9 <= distanceTime && bestDistanceTime * 1.1 >= distanceTime) {
+            // the range is ok, just return.
+            return;
+        }
+        // 2. calculate the buffer dis time
+        const dsTimeBuffer: number = distanceTime / bestDistanceTime;
+        // 3. get the new buffer
+        const nowBuffer: number = this.thBuffer;
+        let newBuffer: number = 0;
+        const logger: Logger = getLogger();
+        if (distanceTime > bestDistanceTime) {
+            newBuffer = nowBuffer * 0.9;
+            logger.info(`[dh-stratege] too high buffer: [${nowBuffer}], adjust to: [${newBuffer}]`);
+        } else {
+            newBuffer = nowBuffer * 1.5;
+            logger.info(`[dh-stratege] too low buffer: [${nowBuffer}], adjust to: [${newBuffer}]`);
+        }
+        this.thBuffer = newBuffer;
+        if (false === reserve) {
+            this.lastActionTime = now;
+        }
+
+        if (this.bufferTimer) {
+            clearTimeout(this.bufferTimer);
+        }
+        
+        // in case a lot of time no action
+        const bufferTime: number = outTime || bestDistanceTime * 1.1;
+        this.bufferTimer = setTimeout(() => {
+            let newBufferTime: number = bufferTime / 2;
+            if (newBufferTime < 10 * 1000) {
+                newBufferTime = 10 * 1000;
+            }
+            this.calculateBestBuffer(true, newBufferTime);
+        }, bufferTime);
+
+        const debugInfo = getDebugger();
+        debugInfo.thBuffer = newBuffer;
     }
 
 }
