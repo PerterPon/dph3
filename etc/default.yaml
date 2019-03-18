@@ -48,8 +48,10 @@ exchanges:
 
 strategy:
     TH:
-        buffer: 6
+        buffer: 10
         bookIndex: 0
+        # 10m
+        distanceTime: 60000
 
 database:
     host: ''
