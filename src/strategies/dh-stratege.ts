@@ -28,7 +28,7 @@ export class DHStratege extends BaseStratege {
     private coinValueMap: Map<string, string> = new Map();
     private bestCoinMap: Map<string, string> = new Map();
 
-    private lastActionTime: Date;
+    private lastActionTime: Date = new Date();
     private thBuffer: number = 0;
     private bufferTimer: NodeJS.Timer;
 
