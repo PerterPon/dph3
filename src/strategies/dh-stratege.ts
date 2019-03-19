@@ -32,9 +32,6 @@ export class DHStratege extends BaseStratege {
     private thBuffer: number = 0;
     private bufferTimer: NodeJS.Timer;
 
-    private lastAsk: number;
-    private lastBid: number;
-
     public async init(): Promise<void> {
         super.init();
         const config: TDPHConfig = getConfig();
@@ -120,10 +117,16 @@ export class DHStratege extends BaseStratege {
                 const exchangeItem = exchangeMap[j];
                 const [exchange, orderBook] = exchangeItem;
                 const fees: TFees = config.exchanges[exchange].fees;
+                const ask: [number, number] = orderBook.asks[bookIndex];
+                const bid: [number, number] = orderBook.asks[bookIndex];
+                // sometimes, order book will be empty, then other order book update, will trigger this problem
+                if (true === _.isEmpty(ask) || true === _.isEmpty(bid)) {
+                    continue;
+                }
                 const calItem: TTHCalItem = {
                     fees: fees,
-                    ask: orderBook.asks[bookIndex],
-                    bid: orderBook.bids[bookIndex],
+                    ask: ask,
+                    bid: bid,
                     exchange: exchange,
                     coin: dphCoin as DPHCoin,
                     standardCoin: standardCoin as StandardCoin
