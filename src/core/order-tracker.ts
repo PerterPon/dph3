@@ -38,5 +38,3 @@ async function doCheck(exchangeName: DPHExchange, exchange: ccxt.Exchange, order
     }
     return result.status;
 }
-
-

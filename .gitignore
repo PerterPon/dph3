@@ -4,3 +4,5 @@ test_output
 log
 etc/dev.yaml
 .DS_Store
+.output_config
+etc/prod.yaml

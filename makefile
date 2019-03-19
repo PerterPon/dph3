@@ -36,20 +36,19 @@ test-cov: build-test
 
 dev: build-ts
 	cd $(DIRNAME)/build && \
-	NODE_PATH=$(BUILD_FOLDER) DEBUG="true" node src/index.js --env dev
+	ETC_ENV=dev NODE_PATH=$(BUILD_FOLDER) DEBUG="true" node src/index.js
 	@echo "dev start success!"
 
 debug: build-ts
 	cd $(DIRNAME)/build && \
-	NODE_PATH=$(BUILD_FOLDER) DEBUG="true" node inspect src/index.js --env dev
+	ETC_ENV=dev NODE_PATH=$(BUILD_FOLDER) DEBUG="true" node inspect src/index.js
 	@echo "dev start success!"
 
 start: build-ts
 	$(PM2) stop all || echo "no running process found"
 	$(PM2) delete all || echo "no running process found"
 	@cd $(DIRNAME)/build && \
-	@# NODE_PATH=$(BUILD_FOLDER) $(PM2) start etc/pm2.config.yaml
-	NODE_PATH=$(BUILD_FOLDER) node src/index.js --env prod
+	ETC_ENV=prod NODE_PATH=$(BUILD_FOLDER) $(PM2) start etc/pm2.config.yaml
 	@echo "start success!"
 
 status:
