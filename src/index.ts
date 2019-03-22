@@ -10,6 +10,8 @@ import { startDPH } from 'src/main';
 import { startApp } from 'src/app';
 import { initEnv } from 'src/core/env';
 
+const easyMonitor = require('easy-monitor');
+
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 start();
@@ -33,3 +35,5 @@ process.on('unhandledRejection', (error) => {
     console.log(chalk.red('=========unhandledRejection========='));
     console.log('unhandled rejection', error);
 });
+
+easyMonitor('dph3');
