@@ -48,7 +48,7 @@ exchanges:
 
 strategy:
     TH:
-        buffer: 10
+        buffer: 3
         bookIndex: 0
         # 10m
         distanceTime: 60000
