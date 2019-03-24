@@ -87,23 +87,28 @@ export class BinanceOrderBook {
                 } else {
                     // 3. check if the price already in order book
                     let updated: boolean = false;
-                    for (let i = 0; i < oldPrice.length; i++) {
-                        const [oldPriceNum] = oldPrice[i];
+                    for (let j = 0; j < oldPrice.length; j++) {
+                        const [oldPriceNum] = oldPrice[j];
                         if (price === oldPriceNum) {
-                            oldPrice[i][1] = amount;
+                            oldPrice[j][1] = amount;
                             updated = true;
                         }
                     }
 
                     // 4. if price did not exists, find a right place and insert it
                     if (false === updated) {
-                        for (let i = 0; i < oldPrice.length; i++) {
-                            const [oldPriceNum] = oldPrice[i];
+                        let inserted: boolean = false;
+                        for (let j = 0; j < oldPrice.length; j++) {
+                            const [oldPriceNum] = oldPrice[j];
                             const needInsert: boolean = goodPrice(price, oldPriceNum);
                             if (true === needInsert) {
-                                oldPrice.splice(i, 0, [price, amount]);
+                                oldPrice.splice(j, 0, [price, amount]);
+                                inserted = true;
                                 break;
                             }
+                        }
+                        if (false === inserted) {
+                            oldPrice.push([price, amount]);
                         }
                     }
                 }

@@ -21,6 +21,7 @@ import { TTHAction } from 'action-types';
 import { TFees } from 'exchange-types';
 import { Logger } from 'log4js';
 import chalk from 'chalk';
+import { reverse } from 'dns';
 
 export class DHStratege extends BaseStratege {
 
@@ -48,8 +49,10 @@ export class DHStratege extends BaseStratege {
         // sense of price
         // one price one action
         const firstAskPrice: number = _.get(firstAsk, '[0]');
+        const firstAskAmount: number = _.get(firstAsk, '[1]');
         const firstBidPrice: number = _.get(firstBid, '[0]');
-        const valueKey: string = `${firstAskPrice}_${firstBidPrice}`;
+        const firstBidAmount: number = _.get(firstBid, '[1]');
+        const valueKey: string = `${firstAskPrice * firstAskAmount}_${firstBidPrice * firstBidAmount}`;
         const oldValue: string|undefined = this.coinValueMap.get(checkKey);
         if (oldValue === valueKey) {
             return;
@@ -207,6 +210,7 @@ export class DHStratege extends BaseStratege {
         const aimsProfit: number = totalFee * (1 + thBuffer);
 
         if ((bestBid - bestAsk) * targetAmount >= aimsProfit) {
+            debugger;
             const totalProfit: number = (bestBid - bestAsk) * targetAmount - totalFee;
             const buyAction: TTHAction = {
                 action: ETradeType.BUY,
@@ -245,12 +249,11 @@ export class DHStratege extends BaseStratege {
             debug.totalFee = totalFeeDebug + totalFee;
             debug.totalProfit = totalProfitDebug + totalProfit;
             debug.totalAmount = totalAmountDebug + targetAmount;
-            this.calculateBestBuffer();
             const debugInfo = getDebugger();
             const tradeTimes: number = debugInfo.tradeTimes || 0;
             debugInfo.tradeTimes = tradeTimes + 1;
             const avgBuffer: number = debugInfo.avgBuffer || 0;
-            debugInfo.avgBuffer = (avgBuffer * tradeTimes + this.thBuffer) / tradeTimes + 1;
+            debugInfo.avgBuffer = (avgBuffer * tradeTimes + this.thBuffer) / (tradeTimes + 1);
             logger.info(
                 chalk.blue(`[DH-STRATEGE] new action [${askItem.coin}]: 
                 fee: [${totalFee}], profit: [${totalProfit}], amount: [${targetAmount}]
@@ -259,6 +262,9 @@ export class DHStratege extends BaseStratege {
                 DH Buffer: [${this.thBuffer}]
                 `)
             );
+
+            // adjust buffer value
+            this.calculateBestBuffer();
         } else {
             // const actuallyProfit: number = (bestBid - bestAsk) * targetAmount - totalFee;
             // logger.info(`[DH-STRATEGE] not enough profit, give up!\nask: [${askItem.exchange}:${bestAsk}], bid: [${bidItem.exchange}:${bestBid}], amount: [${targetAmount}] total fee: [${totalFee}], aim profit: [${aimsProfit}], actually profit: [${actuallyProfit}]`);
@@ -289,6 +295,10 @@ export class DHStratege extends BaseStratege {
             return;
         }
 
+        if (false === reserve) {
+            this.lastActionTime = now;
+        }
+
         const env: TDPHConfig = getConfig();
         const bestDistanceTime: number = env.strategy.TH.distanceTime;
         // 1. get the distance time
@@ -305,20 +315,21 @@ export class DHStratege extends BaseStratege {
         const logger: Logger = getLogger();
         if (distanceTime > bestDistanceTime) {
             newBuffer = nowBuffer * 0.9;
+            // calculate in new buffer
+            this.pushPrice();
+            // update action time, even if no action, in case of duplicate action
+            // this.lastActionTime = new Date();
             logger.info(`[dh-stratege] too high buffer: [${nowBuffer}], adjust to: [${newBuffer}]`);
         } else {
             newBuffer = nowBuffer * 1.5;
             logger.info(`[dh-stratege] too low buffer: [${nowBuffer}], adjust to: [${newBuffer}]`);
         }
         this.thBuffer = newBuffer;
-        if (false === reserve) {
-            this.lastActionTime = now;
-        }
 
         if (this.bufferTimer) {
             clearTimeout(this.bufferTimer);
         }
-        
+
         // in case a lot of time no action
         const bufferTime: number = outTime || bestDistanceTime * 1.1;
         this.bufferTimer = setTimeout(() => {

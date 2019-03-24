@@ -154,7 +154,6 @@ async function listenStratege(stratege: IStratege): Promise<void> {
     }
 }
 
-
 /** listening price */
 async function startListeningPrice(): Promise<void> {
     const logger: Logger = getLogger();

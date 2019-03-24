@@ -48,3 +48,14 @@ export enum ECCXTOrderStatus {
     OPEN = 'open',
     CLOSED = 'closed'
 }
+
+export enum EBFXEvent {
+    SUBSCRIBE = 'subscribe',
+    SUBSCRIBED = 'subscribed',
+    INFO = 'info',
+    ERROR = 'error'
+}
+
+export enum EBFXChannel {
+    BOOK = 'book'
+}
