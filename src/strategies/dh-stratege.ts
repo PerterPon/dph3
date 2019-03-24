@@ -303,10 +303,10 @@ export class DHStratege extends BaseStratege {
         const bestDistanceTime: number = env.strategy.TH.distanceTime;
         // 1. get the distance time
         const distanceTime: number = now.getTime() - this.lastActionTime.getTime();
-        if (bestDistanceTime * 0.9 <= distanceTime && bestDistanceTime * 1.1 >= distanceTime) {
-            // the range is ok, just return.
-            return;
-        }
+        // if (bestDistanceTime * 0.9 <= distanceTime && bestDistanceTime * 1.1 >= distanceTime) {
+        //     // the range is ok, just return.
+        //     return;
+        // }
         // 2. calculate the buffer dis time
         const dsTimeBuffer: number = distanceTime / bestDistanceTime;
         // 3. get the new buffer
@@ -316,7 +316,7 @@ export class DHStratege extends BaseStratege {
         if (distanceTime > bestDistanceTime) {
             newBuffer = nowBuffer * 0.9;
             // calculate in new buffer
-            this.pushPrice();
+            setImmediate(this.pushPrice.bind(this));
             // update action time, even if no action, in case of duplicate action
             // this.lastActionTime = new Date();
             logger.info(`[dh-stratege] too high buffer: [${nowBuffer}], adjust to: [${newBuffer}]`);
