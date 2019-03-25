@@ -17,7 +17,8 @@ import { getLogger } from 'src/core/log';
 import { DPHName } from 'main-types';
 import { TOrderBook } from 'pricer-types';
 import { Log4js, Logger } from 'log4js';
-import { fetchSymbol } from 'src/util';
+import { fetchSymbol, sleep } from 'src/util';
+import { getDebugger } from 'src/core/debug';
 
 export interface IPricer {
     init(): Promise<void>;
@@ -32,6 +33,12 @@ export abstract class BasePricer implements IPricer {
 
     protected OBQueue: Map<string, Function[]> = new Map();
     protected OBMap: Map<string, TOrderBook> = new Map();
+
+    private messageTimes: number = 0;
+
+    constructor() {
+        this.startCounter();
+    }
 
     public async init(): Promise<void> {
 
@@ -54,6 +61,7 @@ export abstract class BasePricer implements IPricer {
     }
 
     protected pushOrderBook(coin: DPHCoin, standardCoin: StandardCoin, orderBook: TOrderBook): void {
+        this.messageTimes++;
         const symbol: string = `${coin}_${standardCoin}`;
         this.OBMap.set(symbol, orderBook);
         this.popOrderBook(coin, standardCoin);
@@ -85,6 +93,17 @@ export abstract class BasePricer implements IPricer {
     protected fetchSymbol(coin: DPHCoin, standardCoin: StandardCoin): string {
         const symbol: string = fetchSymbol(this.exchangeName, coin, standardCoin);
         return symbol;
+    }
+
+    private async startCounter():Promise<void> {
+        const logger: Logger = getLogger();
+        const debugInfo = getDebugger();
+        while (true) {
+            await sleep(10 * 1000);
+            logger.info(`[BASE_PRICE] ${this.pricerName} avg message time in 10 sec: [${this.messageTimes/10}]`);
+            debugInfo[`msg_avg_${this.pricerName}`] = this.messageTimes / 10;
+            this.messageTimes = 0;
+        }
     }
 
 }
