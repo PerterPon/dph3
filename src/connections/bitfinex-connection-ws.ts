@@ -178,6 +178,8 @@ export class BitfinexConnection extends BaseConnection {
 
     private async reconnection(): Promise<void> {
         debug(`[BFX_WS_CONNECTION] reconnect after 3's`);
+        const logger: Logger = getLogger();
+        logger.warn('[BFX_WS_CONNECTION] reconnect after 3\'s');
         this.shouldLiveCheck = false;
         this.clean();
         await sleep(3 * 1000);
