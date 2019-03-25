@@ -9,10 +9,11 @@ import * as _ from 'lodash';
 import * as WebSocket from 'ws';
 import * as Debug from 'debug';
 import chalk from 'chalk';
+import { Logger } from 'log4js';
 
 import { BaseConnection } from 'src/connections/base-connection';
-import { Logger, getLogger } from 'log4js';
 import { sleep } from 'src/util';
+import { getLogger, testLog } from 'src/core/log';
 
 import { EBFXEvent, EBFXChannel } from 'src/enums/main';
 
@@ -93,6 +94,7 @@ export class BitfinexConnection extends BaseConnection {
 
     private onMessage(msg: any): void {
         debug(`bfx got ws message: [${msg}]`);
+        testLog(`[connections/bitfinex-connection-ws] onMessage, msg: [${msg}]`);
         let recevedMessage: any = null;
         try {
             recevedMessage = JSON.parse(msg);
@@ -130,6 +132,7 @@ export class BitfinexConnection extends BaseConnection {
      * @param data 
      */
     private dealObDataMsg(data: TBFXOBData): void {
+        testLog(`[connections/bitfinex-connection-ws] dealObDataMsg, data: [${JSON.stringify(data)}]`);
         const channelId: number = data[0];
         const symbol: string|undefined = this.channelMap.get(channelId);
         const logger: Logger = getLogger();

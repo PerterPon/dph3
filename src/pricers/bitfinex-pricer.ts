@@ -13,6 +13,7 @@ import { BasePricer } from 'src/pricers/base-pricer';
 // import { BitfinexConnection } from 'src/connections/bitfinex-connection';
 import { BitfinexConnection } from 'src/connections/bitfinex-connection-ws';
 import { BitfinexOrderBook } from 'src/pricers/bitfinex-order-book';
+import { testLog } from 'src/core/log';
 
 import { DPHCoin, StandardCoin, DPHExchange } from 'src/enums/main';
 
@@ -43,6 +44,7 @@ export class BitfinexPricer extends BasePricer {
         this.connection.onOrderBook({
             symbol: coinSymbol
         }, (data: [number, number, number]|[number, number, number][]) => {
+            testLog(`[pricers/bitfinex-pricer] onOrderBook: [${data}]`);
             const [orderId, price, amount] = data as [number, number, number];
             let orderBook: TOrderBook;
             if (true === _.isArray(orderId)) {

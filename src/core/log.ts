@@ -9,6 +9,7 @@ import * as log4js from 'log4js';
 
 import { Configuration } from 'log4js';
 import { TDPHConfig } from 'main-types';
+import { getDebugger } from 'src/core/debug';
 
 /**
  * 每个进程一个logger
@@ -23,4 +24,11 @@ export function initLogger(config: Configuration, moduleName: string = "main"): 
 
 export function getLogger(): log4js.Logger {
     return logger;
+}
+
+export function testLog(log: string) {
+    const debug = getDebugger();
+    if (true === debug.testLog) {
+        console.log(log);
+    }
 }

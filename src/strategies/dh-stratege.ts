@@ -12,7 +12,7 @@ import { BaseStratege } from 'src/strategies/base-stratege';
 import { getConfig } from 'src/core/config';
 
 import { DPHExchange, StandardCoin, DPHCoin, ETradeType, EOrderType, EStrategyType } from 'src/enums/main';
-import { getLogger } from 'src/core/log';
+import { getLogger, testLog } from 'src/core/log';
 import { getDebugger } from 'src/core/debug';
 
 import { TDPHConfig } from 'main-types';
@@ -46,6 +46,7 @@ export class DHStratege extends BaseStratege {
     }
 
     public async priceUpdate(exchange: DPHExchange, coin: DPHCoin, standardCoin: StandardCoin, orderBook: TOrderBook): Promise<void> {
+        testLog(`[strategies/dh-stratege] priceUpdate, exchange: [${exchange}], coin: [${coin}], standardCoin: [${standardCoin}], orderBook: [${JSON.stringify(orderBook)}]`);
         const firstAsk: [number,number] = orderBook.asks[0];
         const firstBid: [number, number] = orderBook.bids[0];
         const checkKey: string = `${exchange}_${standardCoin}_${coin}`;
@@ -71,6 +72,7 @@ export class DHStratege extends BaseStratege {
     }
 
     protected async pushPrice(): Promise<void> {
+        testLog(`[strategies/dh-stratege] pushPrice`);
         const dpCoinMap: Map<string, Map<DPHExchange, TOrderBook>> = this.deconstruction();
         const thActions: TTHAction[] = this.calculate(dpCoinMap);
         if (0 < thActions.length) {
@@ -79,6 +81,7 @@ export class DHStratege extends BaseStratege {
     }
 
     private deconstruction(): Map<string, Map<DPHExchange, TOrderBook>> {
+        testLog(`[strategies/dh-stratege] deconstruction`);
         const arrayMap = Array.from(this.exchangeMap);
 
         const dpCoinMap: Map<string, Map<DPHExchange, TOrderBook>> = new Map();
@@ -109,6 +112,7 @@ export class DHStratege extends BaseStratege {
     }
 
     private calculate(dpCoinMap: Map<string, Map<DPHExchange, TOrderBook>>): TTHAction[] {
+        testLog(`[strategies/dh-stratege] calculate, dpCoinMap: [${dpCoinMap}]`);
         const arrayMap = Array.from(dpCoinMap);
         const config: TDPHConfig = getConfig();
         const bookIndex: number = config.strategy.TH.bookIndex || 0;
@@ -147,6 +151,7 @@ export class DHStratege extends BaseStratege {
     }
 
     private doCalItem(calItems: TTHCalItem[]): TTHAction[] {
+        testLog(`[strategies/dh-stratege] doCalItem, calItems: [${JSON.stringify(calItems)}]`);
         if (1 >= calItems.length) {
             return [];
         }
@@ -277,6 +282,7 @@ export class DHStratege extends BaseStratege {
     }
 
     private checkDuplicate(action: TTHAction): boolean {
+        testLog(`[strategies/dh-stratege] checkDuplicate, action: [${JSON.stringify(action)}]`);
         const checkKey: string = `${action.exchange}_${action.standardCoin}_${action.coin}_${action.price}_${action.amount}_${action.orderType}`;
         const latestValue: TTHAction | undefined = this.latestExchangeValueMap.get(checkKey);
         if (undefined === latestValue) {
@@ -291,6 +297,7 @@ export class DHStratege extends BaseStratege {
     }
 
     private calculateBestBuffer(reserve: boolean = false, outTime: number = 0): void {
+        testLog(`[strategies/dh-stratege] calculateBestBuffer, reserve: [${reserve}], outTime: [${outTime}]`);
         // first time, just ignore it
         const now: Date = new Date();
         if (undefined === this.lastActionTime) {

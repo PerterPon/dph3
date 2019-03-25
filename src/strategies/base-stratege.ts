@@ -8,6 +8,7 @@
 import * as _ from 'lodash';
 
 import { setDebugger } from 'src/core/debug';
+import { testLog } from 'src/core/log';
 
 import { TTHAction } from 'action-types';
 import { DPHCoin, StandardCoin, DPHExchange } from 'src/enums/main';
@@ -30,6 +31,7 @@ export class BaseStratege implements IStratege {
     }
 
     public async priceUpdate(exchange: DPHExchange, coin: DPHCoin, standardCoin: StandardCoin, orderBook: TOrderBook): Promise<void> {
+        testLog(`[strategies] priceUpdate: [${exchange}], coin: [${coin}], standardCoin: [${standardCoin}], orderBook: [${JSON.stringify(orderBook)}]`);
         let standardCoinMap: Map<StandardCoin, Map<DPHCoin, TOrderBook>>|undefined = this.exchangeMap.get(exchange);
         if (undefined === standardCoinMap) {
             standardCoinMap = new Map();

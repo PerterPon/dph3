@@ -8,7 +8,7 @@
 import * as _ from 'lodash';
 import { Logger } from "log4js";
 
-import { getLogger } from "src/core/log";
+import { getLogger, testLog } from "src/core/log";
 
 import { EOBType } from "src/enums/main";
 
@@ -34,6 +34,7 @@ export class BitfinexOrderBook {
     }
 
     public update(price: number, count: number, amount: number): TOrderBook {
+        testLog(`[pricers/bitfinex-order-book] update, price: [${price}], count: [${count}], amount: [${amount}]`);
         const orderBook: TOrderBook = this.orderBook;
         
         const logger: Logger = getLogger();
@@ -96,6 +97,7 @@ export class BitfinexOrderBook {
     }
 
     private doUpdatePrice(newPrice: [number, number][], oldPrice: [number, number][], type: EOBType): [number, number][] {
+        testLog(`[pricers/bitfinex-order-book] doUpdatePrice, newPrice: [${newPrice}], oldPrice: [${oldPrice}], type: [${type}]`);
         let firstPrice: number | undefined = _.get(oldPrice, '[0][0]');
         let lastPrice: number|undefined = _.get(oldPrice, '[10][0]');
         if (undefined === firstPrice) {
@@ -106,7 +108,6 @@ export class BitfinexOrderBook {
             }
         }
 
-        
         for (let i = 0; i < newPrice.length; i++) {
             let [price, amount] = newPrice[i];
             // if price bigger than the biggest ask, not need to go on

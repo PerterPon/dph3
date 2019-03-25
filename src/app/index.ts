@@ -37,6 +37,18 @@ router.get('/debug', (ctx: Koa.Context) => {
     ctx.body = JSON.stringify(debug);
 });
 
+router.post('/debugopen', (ctx: Koa.Context) => {
+    const debug = getDebugger();
+    debug.testLog = true;
+    ctx.body = 'success';
+});
+
+router.post('/debugclose', (ctx: Koa.Context) => {
+    const debug = getDebugger();
+    debug.testLog = false;
+    ctx.body = 'success';
+});
+
 export function startApp(): void {
     createApp();
 }

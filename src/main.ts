@@ -11,7 +11,7 @@ import { Logger } from 'log4js';
 
 import { initEnv } from 'src/core/env';
 import { getConfig } from 'src/core/config';
-import { getLogger } from 'src/core/log';
+import { getLogger, testLog } from 'src/core/log';
 
 import { IPricer } from 'src/pricers/base-pricer';
 import { IStratege } from 'src/strategies/base-stratege';
@@ -187,6 +187,7 @@ async function listenPrice( coin: DPHCoin, standardCoin: StandardCoin, exchange:
 
     while (true) {
         const ob: TOrderBook = await pricer.getOrderBook(coin, standardCoin);
+        testLog(`[main] listenPrice, coin: [${coin}], standardCoin: [${standardCoin}], exchange: [${exchange}], ob: [${JSON.stringify(ob)}]`);
         const config: TDPHConfig = getConfig();
         const strategies = config.strategy;
         for (let strategeName in strategies) {

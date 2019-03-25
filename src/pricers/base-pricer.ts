@@ -11,6 +11,7 @@ import * as ccxt from 'ccxt';
 import { BitfinexConnection } from 'src/connections/bitfinex-connection';
 
 import { DPHCoin, StandardCoin, DPHExchange } from 'src/enums/main';
+import { testLog } from 'src/core/log';
 
 import { getLogger } from 'src/core/log';
 
@@ -54,12 +55,14 @@ export abstract class BasePricer implements IPricer {
     }
 
     protected pushOrderBook(coin: DPHCoin, standardCoin: StandardCoin, orderBook: TOrderBook): void {
+        testLog(`[pricers/base-pricer] pushOrderBook, coin: [${coin}], standardCoin: [${standardCoin}], orderBook: [${JSON.stringify(orderBook)}]`);
         const symbol: string = `${coin}_${standardCoin}`;
         this.OBMap.set(symbol, orderBook);
         this.popOrderBook(coin, standardCoin);
     }
 
     protected popOrderBook(coin: DPHCoin, standardCoin: StandardCoin): void {
+        testLog(`[pricers/base-pricer] popOrderBook, coin: [${coin}], standardCoin: [${standardCoin}]`);
         const symbol: string = `${coin}_${standardCoin}`;
         let fnQueue: Function[]|undefined = this.OBQueue.get(symbol);
         if (undefined === fnQueue) {
