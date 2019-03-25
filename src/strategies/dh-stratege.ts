@@ -6,6 +6,7 @@
  */
 
 import * as _ from 'lodash';
+import * as Debug from 'debug';
 
 import { BaseStratege } from 'src/strategies/base-stratege';
 import { getConfig } from 'src/core/config';
@@ -22,6 +23,8 @@ import { TFees } from 'exchange-types';
 import { Logger } from 'log4js';
 import chalk from 'chalk';
 import { reverse } from 'dns';
+
+const debug: Debug.Debugger = Debug('dh-stratege');
 
 export class DHStratege extends BaseStratege {
 
@@ -197,7 +200,8 @@ export class DHStratege extends BaseStratege {
         // choose the min amount
         let targetAmount: number = Math.min(askAmount, bidAmount);
         if (targetAmount < 0.006) {
-            logger.warn(`too low amount: [${targetAmount}], give up`);
+            debug(`too low amount: [${targetAmount}], give up`);
+            // logger.warn(`too low amount: [${targetAmount}], give up`);
             return [];
         }
         targetAmount = 0.005 + Math.random() * 0.001;
@@ -210,7 +214,6 @@ export class DHStratege extends BaseStratege {
         const aimsProfit: number = totalFee * (1 + thBuffer);
 
         if ((bestBid - bestAsk) * targetAmount >= aimsProfit) {
-            debugger;
             const totalProfit: number = (bestBid - bestAsk) * targetAmount - totalFee;
             const buyAction: TTHAction = {
                 action: ETradeType.BUY,
