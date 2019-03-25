@@ -19,13 +19,23 @@ const symbolMap: Map<DPHExchange, Map<StandardCoin, Map<DPHCoin, string>>> = new
     [DPHExchange.BITFINEX, new Map([
         [StandardCoin.USD, new Map([
             [DPHCoin.BTC, 'tBTCUSD'],
-            [DPHCoin.ETH, 'tETHUSD']
+            [DPHCoin.ETH, 'tETHUSD'],
+            [DPHCoin.LTC, 'tLTCUSD'],
+            [DPHCoin.NEO, 'tNEOUSD']
+        ])],
+        [StandardCoin.BTC, new Map([
+            [DPHCoin.ETH, 'tETHBTC'],
         ])]
     ])],
     [DPHExchange.BINANCE, new Map([
         [StandardCoin.USD, new Map([
             [DPHCoin.BTC, 'BTCUSDT'],
-            [DPHCoin.ETH, 'ETHUSDT']
+            [DPHCoin.ETH, 'ETHUSDT'],
+            [DPHCoin.LTC, 'LTCUSDT'],
+            [DPHCoin.NEO, 'NEOUSDT']
+        ])],
+        [StandardCoin.BTC, new Map([
+            [DPHCoin.ETH, 'ETHBTC'],
         ])]
     ])]
 ]);

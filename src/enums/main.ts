@@ -14,12 +14,14 @@ export enum DPHExchange {
 
 export enum DPHCoin {
     BTC = "BTC",
-    ETH = "ETH"
+    ETH = "ETH",
+    LTC = "LTC",
+    NEO = "NEO"
 }
 
 export enum StandardCoin {
     USD = 'USD',
-    BTC = 'BTC'
+    BTC = 'BTC',
 }
 
 export enum ETradeType {
