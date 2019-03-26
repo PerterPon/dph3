@@ -23,12 +23,18 @@ const symbolMap: Map<DPHExchange, Map<StandardCoin, Map<DPHCoin, string>>> = new
             [DPHCoin.LTC, 'tLTCUSD'],
             [DPHCoin.NEO, 'tNEOUSD']
         ])],
+        [StandardCoin.USDT, new Map([
+            [DPHCoin.BTC, 'tBTCUST'],
+            [DPHCoin.ETH, 'tETHUST'],
+            [DPHCoin.LTC, 'tLTCUST'],
+            [DPHCoin.NEO, 'tNEOUST']
+        ])],
         [StandardCoin.BTC, new Map([
             [DPHCoin.ETH, 'tETHBTC'],
         ])]
     ])],
     [DPHExchange.BINANCE, new Map([
-        [StandardCoin.USD, new Map([
+        [StandardCoin.USDT, new Map([
             [DPHCoin.BTC, 'BTCUSDT'],
             [DPHCoin.ETH, 'ETHUSDT'],
             [DPHCoin.LTC, 'LTCUSDT'],

@@ -29,12 +29,16 @@ ipc:
         file: polling
 
 supportedStandard:
-    - "USD"
+    # - "USD"
     # - "BTC"
+    - "USDT"
 
 supportedCoin:
     - "BTC"
     # - "ETH"
+    # - "ETC"
+    # - "EOS"
+    # - "NEO"
 
 supportedExchange:
     - "bitfinex"
