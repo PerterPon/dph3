@@ -41,7 +41,7 @@ export class BaseStratege implements IStratege {
             standardCoinMap.set(standardCoin, coinMap);
         }
         coinMap.set(coin, orderBook);
-        setDebugger(exchange, `${orderBook.asks[0][0]} * ${orderBook.asks[0][1]}_____${orderBook.bids[0][0]} * ${orderBook.bids[0][1]}`);
+        setDebugger(`${exchange}_${standardCoin}_${coin}`, `${orderBook.asks[0][0]} * ${orderBook.asks[0][1]}_____${orderBook.bids[0][0]} * ${orderBook.bids[0][1]}`);
         await this.pushPrice();
     }
 

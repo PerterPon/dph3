@@ -43,6 +43,17 @@ const symbolMap: Map<DPHExchange, Map<StandardCoin, Map<DPHCoin, string>>> = new
         [StandardCoin.BTC, new Map([
             [DPHCoin.ETH, 'ETHBTC'],
         ])]
+    ])],
+    [DPHExchange.HUOBIPRO, new Map([
+        [StandardCoin.USDT, new Map([
+            [DPHCoin.BTC, 'btcusdt'],
+            [DPHCoin.ETH, 'ethusdt'],
+            [DPHCoin.LTC, 'ltcusdt'],
+            [DPHCoin.NEO, 'neousdt']
+        ])],
+        [StandardCoin.BTC, new Map([
+            [DPHCoin.ETH, 'ETHBTC'],
+        ])]
     ])]
 ]);
 
