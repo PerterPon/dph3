@@ -22,6 +22,7 @@ export enum DPHCoin {
 export enum StandardCoin {
     USD = 'USD',
     BTC = 'BTC',
+    USDT = 'USDT'
 }
 
 export enum ETradeType {
