@@ -11,6 +11,7 @@ import { IBaseConnection } from 'src/connections/base-connection';
 import { IPricer } from 'src/pricers/base-pricer';
 import { BitfinexPricer } from 'src/pricers/bitfinex-pricer';
 import { BinancePricer } from 'src/pricers/binance-pricer';
+import { HuobiproPricer } from 'src/pricers/huobipro-pricer';
 
 // strategies
 import { IStratege } from 'src/strategies/base-stratege';
@@ -42,6 +43,7 @@ interface PricerClass {
 const pricerMap: Map<DPHExchange, PricerClass> = new Map([]);
 pricerMap.set(DPHExchange.BINANCE, BinancePricer);
 pricerMap.set(DPHExchange.BITFINEX, BitfinexPricer);
+pricerMap.set(DPHExchange.HUOBIPRO, HuobiproPricer);
 
 export function getPricer(exchangeName: DPHExchange): PricerClass {
     const pricerClass: PricerClass|undefined = pricerMap.get(exchangeName);

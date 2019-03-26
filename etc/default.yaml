@@ -46,7 +46,7 @@ supportedExchange:
     # - "zb"
     # - "bittrex"
     # - "bitstamp"
-    # - "huobipro"
+    - "huobipro"
 
 exchanges:
 

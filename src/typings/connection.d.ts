@@ -44,4 +44,26 @@ declare module "connection-types" {
     /** BFX heart beat */
     export type TBFXheartBeat = [number, 'hb'];
 
+    export type THuobiproOrder = {
+        sub: string;
+        id?: string;
+    }
+
+    export type THuobiproPing = {
+        ping: number;
+    };
+
+    export type ThuobiproOrderResult = {
+
+    };
+
+    export type THuobiproOBData = {
+        ch: 'string';
+        ts: number;
+        tick: {
+            bids: [number, number][];
+            asks: [number, number][];
+        }
+    };
+
 }
