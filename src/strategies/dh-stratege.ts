@@ -318,6 +318,9 @@ export class DHStratege extends BaseStratege {
         const logger: Logger = getLogger();
         if (distanceTime > bestDistanceTime) {
             newBuffer = nowBuffer * 0.9;
+            if (newBuffer <= 0.1) {
+                newBuffer = 0.1;
+            }
             // calculate in new buffer
             setImmediate(this.pushPrice.bind(this));
             // update action time, even if no action, in case of duplicate action
